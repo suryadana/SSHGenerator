@@ -4,16 +4,16 @@ from io import BytesIO
 import pytesseract
 
 class Captcha(object):
-    def __init__(self, bot):
-        self.bot = bot
-    def get_image(self, browser, link):
-        browser.open(link)
-        response = browser.response()
+    def __init__(self, browser):
+        self.browser = browser
+    def get_image(self, link):
+        self.browser.open(link)
+        response = self.browser.response()
         soup = BeautifulSoup(response.get_data(), "lxml")
         src_captcha = soup.findAll('img', {'id': 'captcha_img'})[0]['src']
-        img_response = browser.open_novisit(src_captcha)
+        img_response = self.browser.open_novisit(src_captcha)
         captcha = Image.open(BytesIO(img_response.read()))
-        return captcha, browser
+        return captcha, self.browser
     def read_image(self, image):
         res_captcha = pytesseract.image_to_string(image, config='-psm 13')
         return str(res_captcha)

@@ -1,7 +1,9 @@
 from sshdropbear.sshdropbear import sshdropbear
+from sshdropbear.scraping import ScrapingSSHDropbear
 from createssh.createssh import createssh
 from bestssh.bestssh import bestssh
 from skyssh.skyssh import skyssh
+from skyssh.scraping import ScrapingSKYSSH
 from fullssh.fullssh import fullssh
 from sshudp.sshudp import sshudp
 import telepot, time
@@ -37,15 +39,16 @@ class SSHGenerator(telepot.helper.ChatHandler):
         content_type, chat_type, chat_id = telepot.glance(msg)
         frm = msg['from']
         count = 1
-        #print (frm)
         print msg
-        # print msg['chat']
         user_id = frm['id']
         first_name = frm['first_name'].encode('utf-8')
         group_id = -1001104749192
         admin_id = 286281499
+
+        ScrapingSSHDropbear().run()
+        ScrapingSKYSSH().run()
+
         if content_type == "text":
-            #print (msg['text'])
             if chat_type == "supergroup":
                 if msg['chat']['username'] == "SSHGenerator":
                     if "/ssh" in msg['text']:

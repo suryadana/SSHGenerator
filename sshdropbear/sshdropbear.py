@@ -12,87 +12,27 @@ class sshdropbear(object):
         self.group_id = group_id
         self.user_id = user_id
         self.admin_id = admin_id
+        # Connection to database
+        BASE = os.path.dirname(os.path.realpath(__file__))
+        con = sqlite3.connect(os.path.join(BASE, 'db/urls.db'), check_same_thread=False)
+        c = con.cursor()
+        c.execute('SELECT header FROM urls')
+        result = c.fetchall()
+        server_list = "".join(header + "\n" for header in result)
+
         self.help = """
         Server SSH sshdropbear.
         Server list :
         ======= Server List =========
-        Asian
-            - Singapura : sg
-                - Fast : fast
-                    - List : 1,2,3,4,5,6,7
-                - Dropbear : do
-                    - List : 1,2,3,4,5,6,7
-            - Japan : jp
-            - India : in
-
-        America
-            - United States: usa
-                - List : 1,2,3
-	    - Canada: ca
-        
-        Eropa
-            - Netherland: nl
-            - United Kingdom : uk
-            - Germany : de 
-            - France : fr 
-        
-        Australia
-            - Australia : au
-
+        {0}
         ==============================
-        Example command request : /ssh sshdropbear sg-do2, /ssh sshdropbear sg-wkl2, /ssh sshdropbear jp
-        """
+        Example command request : /ssh sshdropbear {1}
+        """.format(server_list, result[0])
         self.url_server = ""
-        if server == "sg-fast1":
-            self.url_server = "https://sshdropbear.net/create-ssh/server/987656799/singapore"
-        elif server == "sg-fast2":
-            self.url_server = "https://sshdropbear.net/create-ssh/server/987656800/singapore"
-        elif server == "sg-fast3":
-            self.url_server = "https://sshdropbear.net/create-ssh/server/987656808/singapore"
-        elif server == "sg-fast4":
-            self.url_server = "https://sshdropbear.net/create-ssh/server/987656812/singapore"
-        elif server == "sg-fast5":
-            self.url_server = "https://sshdropbear.net/create-ssh/server/987656813/singapore"
-        elif server == "sg-fast6":
-            self.url_server = "https://sshdropbear.net/create-ssh/server/987656802/singapore"
-        elif server == "sg-fast7":
-            self.url_server = "https://sshdropbear.net/create-ssh/server/987656803/singapore"
-        elif server == "sg-do1":
-            self.url_server = "https://sshdropbear.net/create-ssh/server/5145709/singapore"
-        elif server == "sg-do2":
-            self.url_server = "https://sshdropbear.net/create-ssh/server/5655808/singapore"
-        elif server ==  "sg-do3":
-            self.url_server = "https://sshdropbear.net/create-ssh/server/62546093/singapore"
-        elif server == "sg-do4":
-            self.url_server = "https://sshdropbear.net/create-ssh/server/455764/singapore"
-        elif server == "sg-do5":
-            self.url_server = "https://sshdropbear.net/create-ssh/server/455686/singapore"
-        elif server == "sg-do6":
-            self.url_server = "https://sshdropbear.net/create-ssh/server/45567/singapore"
-        elif server == "sg-do7":
-            self.url_server = "https://sshdropbear.net/create-ssh/server/45455612/singapore"
-        elif server == "jp":
-            self.url_server = "https://sshdropbear.net/create-ssh/server/21/japan"
-        elif server == "in":
-            self.url_server = "https://sshdropbear.net/create-ssh/server/22/india"
-        elif server == "usa1":
-            self.url_server = "https://sshdropbear.net/create-ssh/server/32/united-states"
-        elif server == "usa2":
-            self.url_server = "https://sshdropbear.net/create-ssh/server/987656809/united-states"
-        elif server == "usa3":
-            self.url_server = "https://sshdropbear.net/create-ssh/server/987656810/united-states"
-	elif server == "ca":
-	    self.url_server = "https://sshdropbear.net/create-ssh/server/34/canada"
-        elif server == "nl":
-            self.url_server = "https://sshdropbear.net/create-ssh/server/28/netherland"
-        elif server == "uk":
-            self.url_server = "https://sshdropbear.net/create-ssh/server/26/united-kingdom"
-        elif server == "de":
-            self.url_server = "https://sshdropbear.net/create-ssh/server/29/germany"
-        elif server == "fr":
-            self.url_server = "https://sshdropbear.net/create-ssh/server/25/france"
-        elif server == "au":
-            self.url_server = "https://sshdropbear.net/create-ssh/server/35/australia"
+        c.execute('SELECT link from urls WHERE header = ?', (server,))
+        result = c.fetchone()
+        if len(result) > 0:
+            self.url_server = result[0]
         else:
             bot.sendMessage(user_id, "Please check your request.")
             bot.sendMessage(user_id, self.help)
@@ -105,13 +45,14 @@ class sshdropbear(object):
 
         browser.addheaders = headers
 
-        image, browser = Captcha(self.bot).get_image(browser, self.url_server)
+        captcha = Captcha(browser)
+
+        image, browser = captcha.get_image(self.url_server)
 
         browser.select_form(nr=0)
         browser.form['username'] = first_name+str(int(time.time()))[4:]
         browser.form['password'] = str(int(time.time()))[4:]
-        browser.form['captcha'] = Captcha(self.bot).read_image(image)
+        browser.form['captcha'] = captcha.read_image(image)
         browser.submit()
         soup = BeautifulSoup(browser.response().get_data(), 'lxml')
         return  soup.get_text()
-
