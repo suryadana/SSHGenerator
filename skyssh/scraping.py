@@ -40,8 +40,8 @@ class ScrapingSKYSSH():
 
         soup = BeautifulSoup(browser.response().get_data(), 'lxml')
 
-        head_class = soup.findAll('div', {'class': 'pricing-v1-head'})
-        footer_class = soup.findAll('div', {'class': 'pricing-v1-footer'})
+        head_class = soup.findAll('div', {'class': 'pricing-v5-head'})
+        footer_class = soup.findAll('div', {'class': 'pricing-v5-footer'})
 
         for i in range(0, len(head_class)):
             header = head_class[i].get_text().replace('\n', '').lower().replace(' ', '_')
