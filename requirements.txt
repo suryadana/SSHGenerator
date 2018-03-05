@@ -2,3 +2,4 @@ pytesseract
 beautifulsoup4
 Pillow
 telepot
+mechanize
