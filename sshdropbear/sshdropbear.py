@@ -27,7 +27,7 @@ class sshdropbear(object):
         {0}
         ==============================
         Example command request : /ssh sshdropbear {1}
-        """.format(server_list, result[0])
+        """.format(server_list, result[0][0])
         self.url_server = ""
         c.execute('SELECT link from urls WHERE header = ?', (server,))
         result = c.fetchone()
