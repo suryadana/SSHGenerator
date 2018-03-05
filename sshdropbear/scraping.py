@@ -1,7 +1,7 @@
 from bs4 import BeautifulSoup
 import mechanize, os, sqlite3
 
-class ScrapingSSHDropbear(object):
+class ScrapingSSHDropbear():
     def __init__(self):
         # Connection to database
         BASE = os.path.dirname(os.path.realpath(__file__))
@@ -10,9 +10,8 @@ class ScrapingSSHDropbear(object):
         self.c = self.con.cursor()
         self.c.execute('CREATE TABLE IF NOT EXISTS urls (header, link)')
         self.con.commit()
-        super(ScrapingSSHDropbear, self).__init__()
 
-    def run():
+    def run(self):
         base_urls = [
             'https://sshdropbear.net/ssh-list/country/singapore',
             'https://sshdropbear.net/ssh-list/country/japan',
@@ -28,7 +27,7 @@ class ScrapingSSHDropbear(object):
         for url in base_urls:
             self.scrapper(url)
 
-    def scrapper(url):
+    def scrapper(self, url):
         browser = mechanize.Browser()
         browser.set_handle_robots(False)
         headers = [
@@ -48,8 +47,9 @@ class ScrapingSSHDropbear(object):
             header = head_class[i].get_text().replace('\n', '').lower().replace(' ', '_')
             link = footer_class[i].findAll('a', href=True)[0]['href']
             self.c.execute('SELECT header FROM urls WHERE header = ?', (header,))
-            if self.c.fetchone()[0] == header:
-                self.c.execute('UPDATE urls SET link ? WHERE header = ?', (link, header))
+            result = self.c.fetchone()
+            if result and result[0] == header:
+                self.c.execute('UPDATE urls SET link = ? WHERE header = ?', (link, header))
                 self.con.commit()
             else:
                 self.c.execute('INSERT INTO urls (header, link) VALUES (?, ?)', (header, link))

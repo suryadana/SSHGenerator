@@ -4,8 +4,7 @@ sys.path.append(os.path.abspath(os.path.join('..', 'tools')))
 from tools.captcha import Captcha
 
 from bs4 import BeautifulSoup
-import mechanize, time, re
-import sqlite3
+import mechanize, time, re, sqlite3
 
 class skyssh(object):
     def __init__(self, bot, server, group_id, user_id, admin_id):
@@ -32,7 +31,7 @@ class skyssh(object):
         self.url_server = ""
         c.execute('SELECT link from urls WHERE header = ?', (server,))
         result = c.fetchone()
-        if len(result) > 0:
+        if result:
             self.url_server = result[0]
         else:
             bot.sendMessage(user_id, "Please check your request.")
