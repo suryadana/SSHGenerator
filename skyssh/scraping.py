@@ -7,7 +7,7 @@ class ScrapingSKYSSH(object):
         BASE = os.path.dirname(os.path.realpath(__file__))
         self.con = sqlite3.connect(os.path.join(BASE, 'db/urls.db'), check_same_thread=False)
         # Create table queue if not exits
-        self.c = con.cursor()
+        self.c = self.con.cursor()
         self.c.execute('CREATE TABLE IF NOT EXISTS urls (header, link)')
         self.con.commit()
         super(ScrapingSSHDropbear, self).__init__()

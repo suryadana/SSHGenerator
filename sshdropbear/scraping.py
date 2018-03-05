@@ -1,6 +1,5 @@
 from bs4 import BeautifulSoup
-import mechanize
-import sqlite3
+import mechanize, os, sqlite3
 
 class ScrapingSSHDropbear(object):
     def __init__(self):
@@ -8,7 +7,7 @@ class ScrapingSSHDropbear(object):
         BASE = os.path.dirname(os.path.realpath(__file__))
         self.con = sqlite3.connect(os.path.join(BASE, 'db/urls.db'), check_same_thread=False)
         # Create table queue if not exits
-        self.c = con.cursor()
+        self.c = self.con.cursor()
         self.c.execute('CREATE TABLE IF NOT EXISTS urls (header, link)')
         self.con.commit()
         super(ScrapingSSHDropbear, self).__init__()
@@ -48,8 +47,8 @@ class ScrapingSSHDropbear(object):
         for i in range(0, len(head_class)):
             header = head_class[i].get_text().replace('\n', '').lower().replace(' ', '_')
             link = footer_class[i].findAll('a', href=True)[0]['href']
-            c.execute('SELECT header FROM urls WHERE header = ?', (header,))
-            if c.fetchone()[0] == header:
+            self.c.execute('SELECT header FROM urls WHERE header = ?', (header,))
+            if self.c.fetchone()[0] == header:
                 self.c.execute('UPDATE urls SET link ? WHERE header = ?', (link, header))
                 self.con.commit()
             else:
