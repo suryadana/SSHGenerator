@@ -8,7 +8,7 @@ from fullssh.fullssh import fullssh
 from sshudp.sshudp import sshudp
 import telepot, time
 from telepot.loop import MessageLoop
-from telepot.delegate import per_message, create_open, pave_event_space
+from telepot.delegate import per_chat_id, create_open, pave_event_space
 
 
 welcome = """
@@ -109,7 +109,7 @@ class SSHGenerator(telepot.helper.ChatHandler):
 def main():
     bot = telepot.DelegatorBot("API_BOT",[
             pave_event_space()(
-                per_message(), create_open, SSHGenerator, timeout=10
+                per_chat_id(), create_open, SSHGenerator, timeout=10
             ),
         ])
     MessageLoop(bot).run_as_thread()
