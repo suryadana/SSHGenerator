@@ -34,7 +34,7 @@ Tanks for join here.
 """
 class SSHGenerator(telepot.helper.ChatHandler):
     def __init__(self, *args, **kwargs):
-        super(Gretong, self).__init__(*args, **kwargs)
+        super(SSHGenerator, self).__init__(*args, **kwargs)
     def on_chat_message(self, msg):
         content_type, chat_type, chat_id = telepot.glance(msg)
         frm = msg['from']
